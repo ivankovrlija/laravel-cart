@@ -174,6 +174,21 @@ class LaravelSession implements \Moltin\Cart\StorageInterface
     {
         $data = static::$cart;
 
-        Session::put('cart', $data);
+        if (Session::get('cart') == null) {
+            Session::put('cart', $data);
+        }else{
+            if ($data[$this->id] != []) {
+                //dd($data[$this->id]);
+                $cart_id = array_key_first($data);
+                $session = 'cart.' . $cart_id;
+                $session_value = Session::get('cart');
+                $ident = array_key_first($data[$this->id]);
+                $object = $data[$this->id][$ident];
+
+                $session_value[$cart_id] += $data[$this->id];
+
+                Session::put('cart', $session_value);
+            }
+        }
     }
 }
