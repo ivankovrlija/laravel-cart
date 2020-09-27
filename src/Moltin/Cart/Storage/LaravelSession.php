@@ -93,11 +93,22 @@ class LaravelSession implements \Moltin\Cart\StorageInterface
      */
     public function item($identifier)
     {
-        foreach (static::$cart[$this->id] as $item) {
+        
+        $cart_array = Session::get('cart');
+        
+        foreach ($cart_array as $carts) {
+            foreach ($carts as $key => $cart) {
+                if ($key == $identifier) {
+                    
+                    return $cart;
+                }
+            }
+        }
+        /*foreach (static::$cart[$this->id] as $item) {
 
             if ($item->identifier == $identifier) return $item;
 
-        }
+        }*/
 
         return false;
     }
@@ -127,9 +138,23 @@ class LaravelSession implements \Moltin\Cart\StorageInterface
      */
     public function remove($id)
     {
-        unset(static::$cart[$this->id][$id]);
+        
+        $cart_array = Session::get('cart');
+        foreach ($cart_array as $cart_key => $carts) {
 
-        $this->saveCart();
+            foreach ($carts as $key => $cart) {
+                if ($key == $id) {
+                    unset($cart_array[$cart_key][$key]);
+                }
+            }
+        }
+        //dd($cart_array);
+
+        Session::put('cart', $cart_array);
+
+        //unset(static::$cart[$this->id][$id]);
+
+        //$this->saveCart();
     }
 
     /**
